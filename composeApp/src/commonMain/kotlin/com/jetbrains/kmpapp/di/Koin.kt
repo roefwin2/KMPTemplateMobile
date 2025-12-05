@@ -5,6 +5,7 @@ import com.jetbrains.kmpapp.data.KtorMuseumApi
 import com.jetbrains.kmpapp.data.MuseumApi
 import com.jetbrains.kmpapp.data.MuseumRepository
 import com.jetbrains.kmpapp.data.MuseumStorage
+import com.jetbrains.kmpapp.auth.AuthViewModel
 import com.jetbrains.kmpapp.screens.detail.DetailViewModel
 import com.jetbrains.kmpapp.screens.list.ListViewModel
 import io.ktor.client.HttpClient
@@ -37,6 +38,7 @@ val dataModule = module {
 }
 
 val viewModelModule = module {
+    factoryOf(::AuthViewModel)
     factoryOf(::ListViewModel)
     factoryOf(::DetailViewModel)
 }
