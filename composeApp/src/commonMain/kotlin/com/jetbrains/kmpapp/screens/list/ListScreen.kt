@@ -1,7 +1,6 @@
 package com.jetbrains.kmpapp.screens.list
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,12 +15,15 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,19 +34,52 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ListScreen(
-    navigateToDetails: (objectId: Int) -> Unit
+    navigateToDetails: (objectId: Int) -> Unit,
+    onLogout: () -> Unit,
 ) {
     val viewModel = koinViewModel<ListViewModel>()
     val objects by viewModel.objects.collectAsStateWithLifecycle()
 
     AnimatedContent(objects.isNotEmpty()) { objectsAvailable ->
         if (objectsAvailable) {
-            ObjectGrid(
+            ListScaffold(
                 objects = objects,
                 onObjectClick = navigateToDetails,
+                onLogout = onLogout,
             )
         } else {
             EmptyScreenContent(Modifier.fillMaxSize())
+        }
+    }
+}
+
+@Composable
+private fun ListScaffold(
+    objects: List<MuseumObject>,
+    onObjectClick: (Int) -> Unit,
+    onLogout: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = { Text("Collection") },
+                actions = {
+                    TextButton(onClick = onLogout) {
+                        Text("Déconnexion")
+                    }
+                },
+            )
+        }
+    ) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
+            Divider()
+            ObjectGrid(
+                objects = objects,
+                onObjectClick = onObjectClick,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
     }
 }
@@ -86,8 +121,7 @@ private fun ObjectFrame(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f)
-                .background(Color.LightGray),
+                .aspectRatio(1f),
         )
 
         Spacer(Modifier.height(2.dp))

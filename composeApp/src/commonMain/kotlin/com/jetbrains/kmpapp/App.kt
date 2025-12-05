@@ -11,9 +11,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.jetbrains.kmpapp.auth.AuthViewModel
 import com.jetbrains.kmpapp.screens.detail.DetailScreen
 import com.jetbrains.kmpapp.screens.list.ListScreen
+import com.jetbrains.kmpapp.screens.login.LoginScreen
 import kotlinx.serialization.Serializable
+import org.koin.compose.viewmodel.koinViewModel
+
+@Serializable
+object LoginDestination
 
 @Serializable
 object ListDestination
@@ -28,11 +34,35 @@ fun App() {
     ) {
         Surface {
             val navController: NavHostController = rememberNavController()
-            NavHost(navController = navController, startDestination = ListDestination) {
+            val authViewModel = koinViewModel<AuthViewModel>()
+
+            NavHost(navController = navController, startDestination = LoginDestination) {
+                composable<LoginDestination> {
+                    LoginScreen(
+                        viewModel = authViewModel,
+                        onAuthenticated = {
+                            navController.navigate(ListDestination) {
+                                popUpTo(navController.graph.id) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    )
+                }
                 composable<ListDestination> {
-                    ListScreen(navigateToDetails = { objectId ->
-                        navController.navigate(DetailDestination(objectId))
-                    })
+                    ListScreen(
+                        navigateToDetails = { objectId ->
+                            navController.navigate(DetailDestination(objectId))
+                        },
+                        onLogout = {
+                            authViewModel.logout()
+                            navController.navigate(LoginDestination) {
+                                popUpTo(navController.graph.id) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    )
                 }
                 composable<DetailDestination> { backStackEntry ->
                     DetailScreen(

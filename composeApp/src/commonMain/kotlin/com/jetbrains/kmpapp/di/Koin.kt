@@ -5,6 +5,9 @@ import com.jetbrains.kmpapp.data.KtorMuseumApi
 import com.jetbrains.kmpapp.data.MuseumApi
 import com.jetbrains.kmpapp.data.MuseumRepository
 import com.jetbrains.kmpapp.data.MuseumStorage
+import com.jetbrains.kmpapp.auth.AuthRepository
+import com.jetbrains.kmpapp.auth.AuthViewModel
+import com.jetbrains.kmpapp.auth.DemoAuthPlugin
 import com.jetbrains.kmpapp.screens.detail.DetailViewModel
 import com.jetbrains.kmpapp.screens.list.ListViewModel
 import io.ktor.client.HttpClient
@@ -36,6 +39,12 @@ val dataModule = module {
     }
 }
 
+val authModule = module {
+    single { DemoAuthPlugin() }
+    single { AuthRepository(listOf(get<DemoAuthPlugin>())) }
+    factoryOf(::AuthViewModel)
+}
+
 val viewModelModule = module {
     factoryOf(::ListViewModel)
     factoryOf(::DetailViewModel)
@@ -45,6 +54,7 @@ fun initKoin() {
     startKoin {
         modules(
             dataModule,
+            authModule,
             viewModelModule,
         )
     }
