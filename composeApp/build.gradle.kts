@@ -29,15 +29,16 @@ kotlin {
     }
 
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.androidx.compose.ui.tooling.preview)
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.ktor.client.okhttp)
-        }
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-        }
-        commonMain.dependencies {
+    androidMain.dependencies {
+        implementation(libs.androidx.compose.ui.tooling.preview)
+        implementation(libs.androidx.activity.compose)
+        implementation(libs.ktor.client.okhttp)
+        implementation(libs.firebase.auth.android)
+    }
+    iosMain.dependencies {
+        implementation(libs.ktor.client.darwin)
+    }
+    commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -57,6 +58,7 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.firebase.auth)
         }
     }
 }
